@@ -2,4 +2,3 @@ streamlit
 pyodbc
 pandas
 plotly
-decimal
