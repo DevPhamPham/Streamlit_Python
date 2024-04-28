@@ -44,6 +44,8 @@ CREATE TABLE Staff (
 	Gender VARCHAR(10),
 	Position VARCHAR(50),
 	Hotel_ID INT,
+
+	
 );
 
 CREATE TABLE HotelService (
@@ -59,6 +61,7 @@ CREATE TABLE Reservation (
   	Number_of_Guests INT,
 	Cus_ID INT,
 	Room_ID int, 
+
 );
 
 CREATE TABLE payments (
@@ -78,7 +81,17 @@ SELECT*FROM Hotels;
 SELECT*FROM HotelService;
 SELECT*FROM STAFF;
 
-
+SELECT 
+H.NameHotel, SUM(P.Amount) AS TotalRevenue
+ FROM 
+ Reservation AS R
+ JOIN Payments AS P ON R.Res_ID = P.Res_ID
+ JOIN Room AS RM ON R.Room_ID = RM.Room_ID
+ JOIN Hotels AS H ON RM.Hotel_ID = H.Hotel_ID
+WHERE 
+ P.Status = 'Completed'
+GROUP BY 
+ H.NameHotel;
 
 
 INSERT INTO Hotels (NameHotel, Number_of_Rooms, Rating, Location) VALUES
@@ -668,33 +681,33 @@ INSERT INTO Reservation (Check_in_Date, Check_out_Date, Number_of_Guests, Cus_ID
 ('2024-10-27', '2024-11-01', 4, 180, '180');
 INSERT INTO payments (Amount, Status, Res_ID) VALUES 
  (350.25, 'Completed', 1),
-    (270.50, 'Pending', 2),
+    (270.50, 'Completed', 2),
     (500.75, 'Completed', 3),
     (280.00, 'Completed', 4),
-    (400.00, 'Pending', 5),
+    (400.00, 'Completed', 5),
     (600.50, 'Completed', 6),
     (275.75, 'Completed', 7),
     (320.00, 'Pending', 8),
-    (700.25, 'Completed', 9),
-    (260.50, 'Completed', 10),
+    (700.25, 'Pending', 9),
+    (260.50, 'Pending', 10),
     (350.75, 'Completed', 11),
     (275.00, 'Pending', 12),
     (450.50, 'Completed', 13),
-    (800.75, 'Completed', 14),
-    (275.00, 'Completed', 15),
+    (800.75, 'Pending', 14),
+    (275.00, 'Pending', 15),
     (290.00, 'Pending', 16),
     (600.25, 'Completed', 17),
-    (350.50, 'Completed', 18),
+    (350.50, 'Pending', 18),
     (500.75, 'Pending', 19),
     (270.00, 'Completed', 20),
     (400.50, 'Completed', 21),
     (700.75, 'Completed', 22),
-    (275.00, 'Completed', 23),
+    (275.00, 'Pending', 23),
     (380.00, 'Pending', 24),
     (650.25, 'Completed', 25),
     (370.50, 'Completed', 26),
     (550.75, 'Completed', 27),
-    (480.00, 'Pending', 28),
+    (480.00, 'Completed', 28),
     (720.25, 'Completed', 29),
     (260.50, 'Completed', 30),
     (350.25, 'Completed', 31),
@@ -702,53 +715,53 @@ INSERT INTO payments (Amount, Status, Res_ID) VALUES
     (500.75, 'Completed', 33),
     (280.00, 'Completed', 34),
     (400.00, 'Pending', 35),
-    (600.50, 'Completed', 36),
-    (275.75, 'Completed', 37),
+    (600.50, 'Pending', 36),
+    (275.75, 'Pending', 37),
     (320.00, 'Pending', 38),
     (700.25, 'Completed', 39),
-    (260.50, 'Completed', 40),
-    (350.75, 'Completed', 41),
+    (260.50, 'Pending', 40),
+    (350.75, 'Pending', 41),
     (275.00, 'Pending', 42),
     (450.50, 'Completed', 43),
-    (800.75, 'Completed', 44),
-    (275.00, 'Completed', 45),
+    (800.75, 'Pending', 44),
+    (275.00, 'Pending', 45),
     (290.00, 'Pending', 46),
     (600.25, 'Completed', 47),
-    (350.50, 'Completed', 48),
+    (350.50, 'Pending', 48),
     (500.75, 'Pending', 49),
-    (270.00, 'Completed', 50),
-    (400.50, 'Completed', 51),
-    (700.75, 'Completed', 52),
-    (275.00, 'Completed', 53),
+    (270.00, 'Pending', 50),
+    (400.50, 'Pending', 51),
+    (700.75, 'Pending', 52),
+    (275.00, 'Pending', 53),
     (380.00, 'Pending', 54),
     (650.25, 'Completed', 55),
-    (370.50, 'Completed', 56),
+    (370.50, 'Pending', 56),
     (550.75, 'Completed', 57),
     (480.00, 'Pending', 58),
-    (720.25, 'Completed', 59),
+    (720.25, 'Pending', 59),
     (260.50, 'Completed', 60),
-    (350.25, 'Completed', 61),
+    (350.25, 'Pending', 61),
     (270.50, 'Pending', 62),
     (500.75, 'Completed', 63),
     (280.00, 'Completed', 64),
     (400.00, 'Pending', 65),
     (600.50, 'Completed', 66),
     (275.75, 'Completed', 67),
-    (320.00, 'Pending', 68),
+    (320.00, 'Completed', 68),
     (700.25, 'Completed', 69),
 (260.50, 'Completed', 70),
 (350.75, 'Completed', 71),
 (275.00, 'Pending', 72),
 (450.50, 'Completed', 73),
-(800.75, 'Completed', 74),
-(275.00, 'Completed', 75),
+(800.75, 'Pending', 74),
+(275.00, 'Pending', 75),
 (290.00, 'Pending', 76),
 (600.25, 'Completed', 77),
-(350.50, 'Completed', 78),
+(350.50, 'Pending', 78),
 (500.75, 'Pending', 79),
 (270.00, 'Completed', 80),
 (400.50, 'Completed', 81),
-(700.75, 'Completed', 82),
+(700.75, 'Pending', 82),
 (275.00, 'Completed', 83),
 (380.00, 'Pending', 84),
 (650.25, 'Completed', 85),
@@ -756,7 +769,7 @@ INSERT INTO payments (Amount, Status, Res_ID) VALUES
 (550.75, 'Completed', 87),
 (480.00, 'Pending', 88),
 (720.25, 'Completed', 89),
-(260.50, 'Completed', 90),
+(260.50, 'Pending', 90),
 (350.25, 'Completed', 91),
 (270.50, 'Pending', 92),
 (500.75, 'Completed', 93),
@@ -782,20 +795,20 @@ INSERT INTO payments (Amount, Status, Res_ID) VALUES
 (275.00, 'Completed', 113),
 (380.00, 'Pending', 114),
 (650.25, 'Completed', 115),
-(370.50, 'Completed', 116),
+(370.50, 'Pending', 116),
 (550.75, 'Completed', 117),
 (480.00, 'Pending', 118),
-(720.25, 'Completed', 119),
-(260.50, 'Completed', 120),
-(350.25, 'Completed', 121),
+(720.25, 'Pending', 119),
+(260.50, 'Pending', 120),
+(350.25, 'Pending', 121),
 (270.50, 'Pending', 122),
-(500.75, 'Completed', 123),
+(500.75, 'Pending', 123),
 (280.00, 'Completed', 124),
 (400.00, 'Pending', 125),
 (600.50, 'Completed', 126),
 (275.75, 'Completed', 127),
 (320.00, 'Pending', 128),
-(700.25, 'Completed', 129),
+(700.25, 'Pending', 129),
 (260.50, 'Completed', 130),
 (350.75, 'Completed', 131),
 (275.00, 'Pending', 132),
@@ -812,13 +825,13 @@ INSERT INTO payments (Amount, Status, Res_ID) VALUES
 (275.00, 'Completed', 143),
 (380.00, 'Pending', 144),
 (650.25, 'Completed', 145),
-(370.50, 'Completed', 146),
-(550.75, 'Completed', 147),
+(370.50, 'Pending', 146),
+(550.75, 'Pending', 147),
 (480.00, 'Pending', 148),
-(720.25, 'Completed', 149),
+(720.25, 'Pending', 149),
 (260.50, 'Completed', 150),
-(350.25, 'Completed', 151),
-(270.50, 'Pending', 152),
+(350.25, 'Pending', 151),
+(270.50, 'Completed', 152),
 (500.75, 'Completed', 153),
 (280.00, 'Completed', 154),
 (400.00, 'Pending', 155),
@@ -832,20 +845,20 @@ INSERT INTO payments (Amount, Status, Res_ID) VALUES
 (450.50, 'Completed', 163),
 (800.75, 'Completed', 164),
 (275.00, 'Completed', 165),
-(290.00, 'Pending', 166),
+(290.00, 'Completed', 166),
 (600.25, 'Completed', 167),
 (350.50, 'Completed', 168),
 (500.75, 'Pending', 169),
-(270.00, 'Completed', 170),
+(270.00, 'Pending', 170),
 (400.50, 'Completed', 171),
 (700.75, 'Completed', 172),
 (275.00, 'Completed', 173),
-(380.00, 'Pending', 174),
+(380.00, 'Completed', 174),
 (650.25, 'Completed', 175),
-(370.50, 'Completed', 176),
+(370.50, 'Pending', 176),
 (550.75, 'Completed', 177),
-(480.00, 'Pending', 178),
-(720.25, 'Completed', 179),
+(480.00, 'Completed', 178),
+(720.25, 'Pending', 179),
 (260.50, 'Completed', 180);
 
 
@@ -873,3 +886,8 @@ FOREIGN KEY (Cus_ID) REFERENCES Customer(Cus_ID);
  ALTER TABLE Reservation
  ADD CONSTRAINT FK_Reservation_Room
  FOREIGN KEY (Room_ID) REFERENCES Room(Room_ID);
+
+
+ SELECT YEAR(R.Check_in_Date) AS Year, MONTH(R.Check_in_Date) AS Month, COUNT(*) AS RoomsOccupied
+    FROM Reservation AS R
+    GROUP BY YEAR(R.Check_in_Date), MONTH(R.Check_in_Date);

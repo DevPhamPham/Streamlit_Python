@@ -5,8 +5,8 @@ import plotly.express as px
 from decimal import Decimal
 import plotly.graph_objects as go
 
-# Initialize connection.
-# Uses st.cache_resource to only run once.
+# Khởi tạo kết nối.
+# Sử dụng st.cache_resource để chỉ chạy một lần thôi.
 @st.cache_resource
 def init_connection():
     return pyodbc.connect(
@@ -22,8 +22,8 @@ def init_connection():
 
 conn = init_connection()
 
-# Perform query.
-# Uses st.cache_data to only rerun when the query changes or after 10 min.
+# Thực hiện truy vấn.
+# Sử dụng st.cache_data để chỉ chạy lại khi truy vấn thay đổi hoặc sau 10 phút.
 @st.cache_data(ttl=600)
 def run_query(query):
     with conn.cursor() as cur:
@@ -36,6 +36,7 @@ def dashboard_total_revenue():
     SELECT YEAR(R.Check_in_Date) AS Year, MONTH(R.Check_in_Date) AS Month, SUM(P.Amount) AS TotalRevenue
     FROM Reservation AS R
     JOIN payments AS P ON R.Res_ID = P.Res_ID
+    WHERE P.Status = 'Completed'
     GROUP BY YEAR(R.Check_in_Date), MONTH(R.Check_in_Date);
     """
     data = run_query(query)
@@ -75,7 +76,7 @@ def dashboard_room_utilization():
     converted_data = []
     for row in data:
         year, month, rooms_occupied_str = row
-        rooms_occupied = Decimal(str(rooms_occupied_str))  # Chuyển Decimal thành chuỗi trước khi chuyển đổi
+        rooms_occupied = int(rooms_occupied_str)  # Chuyển Decimal thành số nguyên
         converted_data.append((year, month, rooms_occupied))
 
     # Tạo DataFrame từ dữ liệu
@@ -88,8 +89,8 @@ def dashboard_room_utilization():
             column_config={"Year": st.column_config.NumberColumn(format="%d")},
         )
 
-    # Plot room utilization
-    fig = px.bar(df, x="Month", y="RoomsOccupied", title="Room Utilization by Month")
+    # Biểu đồ đường biểu diễn Room Utilization
+    fig = px.line(df, x="Month", y="RoomsOccupied", title="Room Utilization by Month")
     st.plotly_chart(fig)
 
 # Dashboard 3: Customer Analysis
@@ -151,6 +152,84 @@ def dashboard_staff_performance():
     st.plotly_chart(fig)
 
 
+# Dashboard 5: Total Revenue by Hotel and month
+def dashboard_total_revenue_by_hotelAndMonth():
+    query = """
+SELECT 
+    YEAR(R.Check_in_Date) AS Year, 
+    MONTH(R.Check_in_Date) AS Month, 
+    H.NameHotel, 
+    SUM(P.Amount) AS TotalRevenue
+FROM 
+    Reservation AS R
+    JOIN Payments AS P ON R.Res_ID = P.Res_ID
+    JOIN Room AS RM ON R.Room_ID = RM.Room_ID
+    JOIN Hotels AS H ON RM.Hotel_ID = H.Hotel_ID
+WHERE 
+    P.Status = 'Completed'
+GROUP BY 
+    YEAR(R.Check_in_Date), MONTH(R.Check_in_Date), H.NameHotel;
+    """
+    data = run_query(query)
+
+    # Chuyển đổi dữ liệu từ tuple chuỗi sang tuple số và Decimals
+    converted_data = []
+    for row in data:
+        year, month, hotel_name, total_revenue_str = row
+        total_revenue = int(total_revenue_str)  # Chuyển Decimal thành số nguyên
+        converted_data.append((year, month, hotel_name, total_revenue))
+
+    # Tạo DataFrame từ dữ liệu
+    df = pd.DataFrame(converted_data, columns=["Year", "Month", "HotelName", "TotalRevenue"])
+
+    st.subheader("Total Revenue by Hotel and Month")
+    with st.expander("Data Preview"):
+        st.dataframe(
+            df,
+            column_config={"Year": st.column_config.NumberColumn(format="%d")},
+        )
+
+    # Biểu đồ đường biểu diễn Total Revenue của từng khách sạn theo từng tháng
+    fig = px.line(df, x="Month", y="TotalRevenue", color="HotelName", title="Total Revenue by Hotel and Month", 
+                  markers=True)
+    st.plotly_chart(fig)
+
+#Dashboard 6: total revenue by hotel
+def dashboard_total_revenue_by_hotel():
+    query = """
+    SELECT 
+        H.NameHotel, 
+        SUM(P.Amount) AS TotalRevenue
+    FROM 
+        Reservation AS R
+        JOIN Payments AS P ON R.Res_ID = P.Res_ID
+        JOIN Room AS RM ON R.Room_ID = RM.Room_ID
+        JOIN Hotels AS H ON RM.Hotel_ID = H.Hotel_ID
+    WHERE 
+        P.Status = 'Completed'
+    GROUP BY 
+        H.NameHotel;
+    """
+    data = run_query(query)
+
+    # Chuyển đổi dữ liệu từ tuple chuỗi sang tuple số và Decimals
+    converted_data = []
+    for row in data:
+        hotel_name, total_revenue_str = row
+        total_revenue = int(total_revenue_str)  # Chuyển Decimal thành số nguyên
+        converted_data.append((hotel_name, total_revenue))
+
+    # Tạo DataFrame từ dữ liệu
+    df = pd.DataFrame(converted_data, columns=["HotelName", "TotalRevenue"])
+
+    st.subheader("Total Revenue by Hotel")
+    with st.expander("Data Preview"):
+        st.dataframe(df)
+
+    # Biểu đồ cột biểu diễn Total Revenue của từng khách sạn
+    fig = px.bar(df, x="HotelName", y="TotalRevenue", title="Total Revenue by Hotel")
+    st.plotly_chart(fig)
+
 # Main App
 def main():
     st.title("Hotel Management Dashboard")
@@ -159,6 +238,8 @@ def main():
     dashboard_room_utilization()
     dashboard_customer_analysis()
     dashboard_staff_performance()
+    dashboard_total_revenue_by_hotelAndMonth()
+    dashboard_total_revenue_by_hotel()
 
 if __name__ == "__main__":
     main()
