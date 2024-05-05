@@ -237,29 +237,29 @@ def dashboard_sales_channel_analysis():
     sales_channel_query = """
         SELECT 
             CASE 
-                WHEN Choose_hoser='yes' THEN 'Direct Booking'
-                ELSE 'Through Agent'
-            END AS Sales_Channel,
+                WHEN Choose_hoser='yes' THEN 'Room Service'
+                ELSE 'No Room Service'
+            END AS Service_Type,
             COUNT(Res_ID) AS Number_of_Bookings
         FROM 
             Reservation
         GROUP BY 
             CASE 
-                WHEN Choose_hoser='yes' THEN 'Direct Booking'
-                ELSE 'Through Agent'
+                WHEN Choose_hoser='yes' THEN 'Room Service'
+                ELSE 'No Room Service'
             END;
     """
     sales_channel_data = run_query(sales_channel_query)
     # Chuyển đổi dữ liệu từ tuple chuỗi sang tuple số và Decimals
     converted_data = []
     for row in sales_channel_data:
-        sales_channel, num_bookings_str = row
+        service_type, num_bookings_str = row
         num_bookings = int(num_bookings_str)  # Chuyển Decimal thành số nguyên
-        converted_data.append((sales_channel, num_bookings))
+        converted_data.append((service_type, num_bookings))
 
     # Tạo DataFrame từ dữ liệu
     df_sales_channel = pd.DataFrame(
-        converted_data, columns=["Sales_Channel", "Number_of_Bookings"]
+        converted_data, columns=["Service_Type", "Number_of_Bookings"]
     )
 
     with st.expander("Data Preview"):
@@ -271,8 +271,8 @@ def dashboard_sales_channel_analysis():
         fig_sales_channel = px.pie(
             df_sales_channel,
             values="Number_of_Bookings",
-            names="Sales_Channel",
-            title="Sales Channel Distribution",
+            names="Service_Type",
+            title="Room Service Distribution",
             hole=0.3,
         )
 

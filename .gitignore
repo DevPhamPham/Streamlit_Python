@@ -2,3 +2,5 @@
 Financial Data Clean.xlsx
 test.py
 dashboard.py
+.streamlit/*
+.streamlit/secrets.toml
